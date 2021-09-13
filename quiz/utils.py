@@ -1,5 +1,6 @@
 import random
-from .models import Question
+from .models import Category, Question
+from django.db.models import Max
 
 def get_random_question(name):
     questions = []
