@@ -3,7 +3,8 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=25, unique=True, null=False)
-    image = models.ImageField(upload_to='quiz/static/img/', null=False, default="")
+    image = models.ImageField(upload_to='static/img/', null=False, default="")
+    slug = models.SlugField(max_length=25, null=False, default="")
 
     def __str__(self):
         return self.name
