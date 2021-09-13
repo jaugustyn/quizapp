@@ -16,9 +16,9 @@
                 <div class="col">
                     {% for category in categories %}
                         {{ category.name }}
-                        <img src="{% static 'img/' %}{{ category.name.lower }}.png" style="width:100px;"/>
-                    {% endfor %}
+                        <img src="{{ category.image }}" style="width:100px;"/>
 
+                    {% endfor %}
 
                     {% block content %}
 
