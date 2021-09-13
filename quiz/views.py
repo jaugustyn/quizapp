@@ -9,8 +9,6 @@ def category_list(request):
     return render(request, 'quiz/base.html', {'categories': categories})
 
 
-def question_from_category(request, pk):
-    quiz = Question.objects.filter(category_id=pk)
-
-    print(quiz)
+def question_from_category(request, name):
+    quiz = Question.objects.filter(category_id=name)
     return render(request, 'quiz/question_list.html', {'quiz': quiz})

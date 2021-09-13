@@ -16,7 +16,9 @@
                 <div class="col">
                     {% for category in categories %}
                         {{ category.name }}
-                        <a href="{{ category.id }}"><img src="{{ category.image }}" style="width:100px;"/></a>
+                        <a href="{{ category.name }}">
+                            <img src="{{ category.image }}" style="width:100px;"/>
+                        </a>
 
                     {% endfor %}
 
