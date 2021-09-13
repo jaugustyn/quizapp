@@ -4,22 +4,15 @@
 <div class="container mt-sm-5 my-1">
     <div class="question ml-sm-5 pl-sm-5 pt-2">
         <div class="py-2 h5">
-            <form method="post">
-                {% for question in quiz.values %}
-                    <h3>Pytanie {{ question.id }}:</h3>
-                    <h4 style="margin-left:50px;">{{ question.question }}</h4>
-                    <hr>
-                    <br>
-                    {% for key, value in question.details.items %}
-                        <div class="ml-md-3 ml-sm-3 pl-md-5 pt-sm-0 pt-3" id="options">
-                            <label class="options">{{ value }}<input type="radio" name="radio" id="{{ key }}"><span class="checkmark"></span></label><br>
-                        </div>
-                    {% endfor %}
+            {% for question in quiz %}
+                <h3>{{ question }}</h3>
+                {% for key, option in question.details.items %}
+                    <p>{{ option }}</p>
                 {% endfor %}
-                <div class="d-flex align-items-center pt-3">
-                    <div class="ml-auto mr-sm-5"><button class="btn btn-success">Check answers</button></div>
-                 </div>
-            </form>
+            {% endfor %}
+            <div class="d-flex align-items-center pt-3">
+                <div class="ml-auto mr-sm-5"><button class="btn btn-success">Check answers</button></div>
+            </div>
         </div>
     </div>
 </div>
