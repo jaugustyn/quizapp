@@ -2,19 +2,30 @@
 
 {% block content %}
 <div class="container mt-sm-5 my-1">
-    <div class="question ml-sm-5 pl-sm-5 pt-2">
-        <div class="py-2 h5">
-            {% for question in quiz %}
-                <h3>{{ question }}</h3>
-                {% for key, option in question.details.items %}
-                    <p>{{ option }}</p>
-                {% endfor %}
-            {% endfor %}
-            <div class="d-flex align-items-center pt-3">
-                <div class="ml-auto mr-sm-5"><button class="btn btn-success">Check answers</button></div>
-            </div>
-        </div>
+    <form action="result" method="POST">
+        <div>
+            <div>
+                {% for question in quiz %}
+                <div class="card m-3">
+                    <div class="card-header">
+                        {{ forloop.counter }}. {{ question }}
+                    </div>
+                    <div class="card-body shadow p-3">
+                    {% for key, option in question.details.items %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="{{ question.id }}" id="{{ option }}" checked>
+                        <label class="form-check-label" for="{{ option }}">
+                        {{ option }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                    </div>
+                </div>
+                {% endfor %} 
+            </div>     
     </div>
+    <button type="submit" class="btn btn-success m-3">Success</button>
+    </form>
 </div>
 
 {% endblock %}
