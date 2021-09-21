@@ -5,14 +5,14 @@ from .models import Category, Question, Answer, Quiz
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
-        lookup_field = 'slug'
+        fields = ['name']
+        lookup_field = 'name'
 
 
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = '__all__'
+        fields = ['answer1', 'answer2', 'answer3', 'answer4', 'correct_answer', ]
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -20,16 +20,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = '__all__'
-
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     representation['answers'] = self.context['answers']
+        fields = ['question', 'points', 'answers']
 
 
 class QuizSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Quiz
-        fields = '__all__'
+        fields = ['description', 'category']
+        lookup_field = 'category'
         depth = 1
