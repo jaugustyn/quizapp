@@ -13,9 +13,9 @@ from .serializers import CategorySerializer, QuizSerializer, QuestionSerializer,
 @api_view(['GET'])
 def api_overview(request):
     api_urls = {
-        'Category List': '/',
-        'Quiz Detail': '/<category_name>/',
-        'Quiz Result': '/<category_name>/result/',
+        'Api Overview': "/",
+        'Category List': 'categories/',
+        'Quiz Detail': 'categories/<category_name>/',
     }
     return Response(api_urls)
 
