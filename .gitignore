@@ -1,5 +1,7 @@
 .idea/
 myenv/
+quiz/migrations/
+static/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
