@@ -5,5 +5,5 @@ django-filter
 Pillow
 python-dotenv
 mysqlclient
-pyyaml #swagger schema
-uritemplate #swagger schema
+pyyaml
+uritemplate
