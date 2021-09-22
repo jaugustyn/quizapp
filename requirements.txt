@@ -1,1 +1,9 @@
 Django==3.2.7
+djangorestframework
+markdown
+django-filter
+Pillow
+python-dotenv
+mysqlclient
+pyyaml #swagger schema
+uritemplate #swagger schema
