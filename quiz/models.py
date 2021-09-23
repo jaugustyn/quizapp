@@ -29,7 +29,7 @@ class Question(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=25, unique=True)
     image = models.ImageField(upload_to='static/img/')
-    slug = models.SlugField(unique=True, null=False, help_text="category_name")
+    slug = models.SlugField(unique=True, null=False, help_text="Category_name")
 
     class Meta:
         verbose_name_plural = 'Categories'

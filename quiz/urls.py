@@ -17,5 +17,7 @@ urlpatterns = [
     # path('', views.api_overview, name="api-overview"),  # Api overview
     path('categories/', views.category_list.as_view(), name="category_list"),
     path('categories/<str:name>/', views.category_update.as_view(), name="category_update"),
-    path('questions/<str:slug>/', views.quiz_list, name="quiz_list"),
+    path('questions/', views.question_list.as_view(), name="question_list"),
+    path('questions/<str:pk>/', views.question_update.as_view(), name="question_update"),
+    path('quiz/<str:name>/', views.quiz_list, name="quiz_list"),
 ]
