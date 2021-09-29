@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ["id", "name", "image", "category_url"]
+        fields = ["id", "name", "image", "category_url", "color"]
 
 
 class AnswerSerializer(serializers.ModelSerializer):
