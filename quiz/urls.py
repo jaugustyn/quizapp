@@ -22,6 +22,7 @@ urlpatterns = [
 
     path('', include(router.urls)),
     path('quiz/<str:name>/', views.quiz_list, name="quiz_list"),
+    path('questions', views.QuestionViewSet.as_view, name="questionviewset")
 ]
 
 

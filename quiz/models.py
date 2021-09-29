@@ -19,7 +19,7 @@ class Answer(models.Model):
 
 class Question(models.Model):
     question = models.CharField(max_length=200)
-    answers = models.OneToOneField(Answer, on_delete=models.CASCADE, blank=True, related_name="Answers")
+    answers = models.OneToOneField(Answer, on_delete=models.CASCADE, related_name="answers")
     points = models.PositiveIntegerField()
 
     def __str__(self):
@@ -28,7 +28,7 @@ class Question(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=25, unique=True)
-    image = models.ImageField(upload_to='static/img/')
+    image = models.ImageField(upload_to='static/img/', blank=True, null=True)
     slug = models.SlugField(unique=True, null=False, help_text="Category_name")
 
     class Meta:
@@ -46,7 +46,7 @@ class Category(models.Model):
 class Quiz(models.Model):
     description = models.TextField(max_length=500)
     category = models.ForeignKey(Category, to_field='name', on_delete=models.CASCADE, related_name="category_name")
-    question = models.ManyToManyField(Question, blank=True)
+    question = models.ManyToManyField(Question)
 
     class Meta:
         verbose_name_plural = 'Quizzes'
