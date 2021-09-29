@@ -30,6 +30,7 @@ class Category(models.Model):
     name = models.CharField(max_length=25, unique=True)
     image = models.ImageField(upload_to='static/img/', blank=True, null=True)
     slug = models.SlugField(unique=True, null=False, help_text="Category_name")
+    color = models.CharField(max_length=10, default="#")
 
     class Meta:
         verbose_name_plural = 'Categories'

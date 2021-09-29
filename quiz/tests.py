@@ -25,15 +25,14 @@ class QuestionTestCase(APITestCase):
 
     def test_create_question(self):
         self.data = {
-            'id': 1,
+            'id': 2,
             'answers': {"answer1": "test_1", "answer2": "test_2", "answer3": "test_3", "answer4": "test_4",
-                        "correct_answer": "1"},
-            'question': "Does test passed?",
-            'points': 3
+                        "correct_answer": "4"},
+            'question': "Does create test passed?",
+            'points': 2
         }
         response = self.client.post('/questions/', self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
 
     def test_get_question(self):
         questions = Question.objects.get(pk=1)
