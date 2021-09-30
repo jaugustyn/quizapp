@@ -31,6 +31,7 @@ class Category(models.Model):
     image = models.ImageField(upload_to='static/img/', blank=True, null=True)
     slug = models.SlugField(unique=True, null=False, help_text="Category_name")
     color = models.CharField(max_length=10, default="#")
+    description = models.TextField(max_length=500, default="Description")
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -45,7 +46,7 @@ class Category(models.Model):
 
 
 class Quiz(models.Model):
-    description = models.TextField(max_length=500)
+    name = models.CharField(max_length=30, default="quiz name")
     category = models.ForeignKey(Category, to_field='name', on_delete=models.CASCADE, related_name="category_name")
     question = models.ManyToManyField(Question)
 
@@ -53,4 +54,4 @@ class Quiz(models.Model):
         verbose_name_plural = 'Quizzes'
 
     def __str__(self):
-        return self.description
+        return self.name
