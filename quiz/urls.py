@@ -7,7 +7,7 @@ import pprint
 
 router = DefaultRouter()
 router.register(r'categories', views.CategoryViewSet)
-router.register(r'questions', views.QuestionViewSet, basename='questionviewset')
+router.register(r'questions', views.QuestionViewSet)
 
 # pprint.pprint(router.get_urls())  # Prints created urls by router
 
