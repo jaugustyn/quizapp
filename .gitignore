@@ -1,6 +1,7 @@
 .idea/
 myenv/
 quiz/migrations/
+accounts/migrations/
 static/
 test_csv_report.csv
 # Byte-compiled / optimized / DLL files
