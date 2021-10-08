@@ -1,13 +1,14 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.schemas import AutoSchema, coreapi
-from rest_framework import generics, viewsets
-from .models import Category, Question, Answer, Quiz
-from .serializers import CategorySerializer, QuizSerializer, QuestionSerializer, AnswerSerializer
+from rest_framework import viewsets
+from .models import Category, Question, Quiz, Answer
+from accounts.forms import UserForm
+from .serializers import CategorySerializer, QuestionSerializer
 import random
 
 
 # Create your views here.
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer

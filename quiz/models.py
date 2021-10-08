@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator, validate_email
 
 
 # Create your models here.
@@ -12,7 +12,8 @@ class Answer(models.Model):
     answer3 = models.CharField(max_length=200)
     answer4 = models.CharField(max_length=200)
     choices = [("1", "1"), ("2", "2"), ("3", "3"), ("4", "4")]
-    correct_answer = models.CharField(max_length=200, choices=choices, help_text="Which answer is correct: 1, 2, 3 or 4?")
+    correct_answer = models.CharField(max_length=200, choices=choices,
+                                      help_text="Which answer is correct: 1, 2, 3 or 4?")
 
     def __str__(self):
         return self.correct_answer
@@ -20,8 +21,10 @@ class Answer(models.Model):
 
 class Question(models.Model):
     question = models.CharField(max_length=200)
-    answers = models.OneToOneField(Answer, on_delete=models.CASCADE, related_name="answers", help_text="If answer was added, select from first from the bottom")
-    points = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], default=1, help_text="1 - 10 points")
+    answers = models.OneToOneField(Answer, on_delete=models.CASCADE, related_name="answers",
+                                   help_text="If answer was added, select from first from the bottom")
+    points = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], default=1,
+                                         help_text="1 - 10 points")
 
     def __str__(self):
         return self.question
@@ -48,7 +51,8 @@ class Category(models.Model):
 
 class Quiz(models.Model):
     description = models.CharField(max_length=300, default="Description")
-    category = models.ForeignKey(Category, to_field='name', on_delete=models.CASCADE, related_name="category_name", db_column="category_name")
+    category = models.ForeignKey(Category, to_field='name', on_delete=models.CASCADE, related_name="category_name",
+                                 db_column="category_name")
     question = models.ManyToManyField(Question)
 
     class Meta:
