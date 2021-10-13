@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 import django_heroku
+import rest_framework.authentication
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,10 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework',
-    'rest_framework.authtoken',
     'quiz',
     'accounts',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -90,11 +91,11 @@ DATABASES = {
         'PASSWORD': os.getenv("DB_PASSWORD"),
         'HOST': os.getenv("DB_HOST"),
         'PORT': os.getenv("DB_PORT"),
+        # Foreign key checks
+        'OPTIONS': {
+            "init_command": "SET foreign_key_checks = 0;",
+        }
     },
-    # 'TEST': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
 }
 if 'test' in sys.argv:
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
@@ -152,3 +153,22 @@ STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 django_heroku.settings(locals())
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication', 'rest_framework.authentication.SessionAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+}
+
+REST_AUTH_REGISTER_SERIALIZER = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.RegistrationSerializer',
+}
+
+# REST_REGISTRATION = {
+#     'REGISTER_VERIFICATION_URL': False,
+#     'RESET_PASSWORD_VERIFICATION_URL': False,
+#     'REGISTER_EMAIL_VERIFICATION_URL': False,
+#
+#     'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
+# }
+
+AUTH_USER_MODEL = 'accounts.User'

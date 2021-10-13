@@ -1,5 +1,8 @@
 from django.urls import path, include
+from rest_framework.authtoken.views import obtain_auth_token
+import accounts.views
 from . import views
+from accounts.views import UserViewSet
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 from rest_framework.routers import DefaultRouter
@@ -7,6 +10,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'categories', views.CategoryViewSet)
 router.register(r'questions', views.QuestionViewSet)
+router.register(r'users', UserViewSet)
 # pprint.pprint(router.get_urls())  # Prints created urls by router
 
 
@@ -23,4 +27,7 @@ urlpatterns = [
 
     path('', include(router.urls)),
     path('quiz/<str:name>/', views.quiz_list, name="quiz_list"),
+    path('accounts/api-auth/', include('rest_framework.urls')),
+    path('accounts/api-token-auth', obtain_auth_token, name='api_token_auth'),
+    path('accounts/register/', accounts.views.registration_view, name="register"),
 ]
