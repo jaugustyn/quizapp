@@ -1,10 +1,14 @@
-from rest_framework.decorators import api_view
+import json
+from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets, generics, status
 from .models import User
 from .serializers import RegistrationSerializer
 from .forms import RegistrationForm
+from django.contrib import auth
 
 
 # Create your views here.
@@ -16,7 +20,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 @api_view(['POST'])
-def registration_view(request):
+@permission_classes([AllowAny])
+def registration(request):
     if request.method == 'POST':
         serializer = RegistrationSerializer(data=request.data)
         data = {}
@@ -34,10 +39,35 @@ def registration_view(request):
         return Response(data)
 
 
-# {
-# "first_name": "test1",
-# "last_name": "test214",
-# "email":"test1@gmail.com",
-# "password":"1234",
-# "birth_date":"2010-10-20"
-# }
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_user(request):
+    data = {}
+    body = request.data
+    email = body['email']
+    password = body['password']
+    try:
+        user = User.objects.get(email=email)
+    except BaseException:
+        raise ValidationError({'400': f'{str(BaseException)}'})
+    token = Token.objects.get_or_create(user=user)[0].key
+
+    if user:
+        if user.is_active:
+            auth.login(request, user)
+            data['message'] = "User logged in."
+            data['email'] = user.email
+
+            return Response({'data': data, 'token': token})
+        else:
+            raise ValidationError({'400': f'Account not active'})
+    else:
+        raise ValidationError({'400': f'User does not exist'})
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def logout_user(request):
+    request.user.auth_token.delete()
+    auth.logout(request)
+    return Response("User logged out successfully")

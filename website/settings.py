@@ -163,12 +163,5 @@ REST_AUTH_REGISTER_SERIALIZER = {
     'REGISTER_SERIALIZER': 'accounts.serializers.RegistrationSerializer',
 }
 
-# REST_REGISTRATION = {
-#     'REGISTER_VERIFICATION_URL': False,
-#     'RESET_PASSWORD_VERIFICATION_URL': False,
-#     'REGISTER_EMAIL_VERIFICATION_URL': False,
-#
-#     'VERIFICATION_FROM_EMAIL': 'no-reply@example.com',
-# }
 
 AUTH_USER_MODEL = 'accounts.User'

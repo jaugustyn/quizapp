@@ -29,5 +29,7 @@ urlpatterns = [
     path('quiz/<str:name>/', views.quiz_list, name="quiz_list"),
     path('accounts/api-auth/', include('rest_framework.urls')),
     path('accounts/api-token-auth', obtain_auth_token, name='api_token_auth'),
-    path('accounts/register/', accounts.views.registration_view, name="register"),
+    path('accounts/register/', accounts.views.registration, name="register"),
+    path('accounts/login/', accounts.views.login_user, name='login_user'),
+    path('accounts/logout/', accounts.views.logout_user, name="logout_user"),
 ]
