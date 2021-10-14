@@ -52,6 +52,9 @@ def login_user(request):
         raise ValidationError({'400': f'{str(BaseException)}'})
     token = Token.objects.get_or_create(user=user)[0].key
 
+    if not user.check_password(password):
+        raise ValidationError({'message': "Incorrect login information. Please check your crefentials and try again."})
+
     if user:
         if user.is_active:
             auth.login(request, user)

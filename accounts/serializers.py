@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth import password_validation
+from rest_framework.exceptions import ValidationError
 from .models import User
 from rest_framework.validators import UniqueValidator
 
@@ -15,12 +16,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
         extra_fields = {'password': {"write_only": True}}
 
     def save(self, **kwargs):
-        account = User(
+        user = User(
             first_name=self.validated_data['first_name'],
             last_name=self.validated_data['last_name'],
             email=self.validated_data['email'],
         )
         password = self.validated_data['password']
-        account.set_password(password)
-        account.save()
-        return account
+        # try:
+        #     password_validation.validate_password(password=password, user=user)
+        # except ValidationError:
+        #     raise ValidationError({'message': "Password requires sth"})
+
+        user.set_password(password)
+        user.save()
+        return user
