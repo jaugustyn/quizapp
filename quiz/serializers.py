@@ -6,7 +6,8 @@ from django.core.validators import validate_image_file_extension, validate_slug
 
 class CategorySerializer(serializers.ModelSerializer):
     category_url = serializers.SlugField(source='slug', validators=[validate_slug])
-    image = serializers.ImageField(use_url=True, allow_empty_file=True, allow_null=True, validators=[validate_image_file_extension])
+    image = serializers.ImageField(use_url=True, allow_empty_file=True, allow_null=True,
+                                   validators=[validate_image_file_extension])
 
     class Meta:
         model = Category
@@ -24,11 +25,13 @@ class QuestionSerializer(WritableNestedModelSerializer, serializers.ModelSeriali
 
     class Meta:
         model = Question
-        fields = "__all__"
+        fields = ['question', 'points', 'answers']
 
 
 class QuizSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Quiz
         fields = "__all__"
-        depth = 1
+        # depth = 1

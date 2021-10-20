@@ -10,6 +10,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'categories', views.CategoryViewSet)
 router.register(r'questions', views.QuestionViewSet)
+# router.register(r'quizzes', views.QuizViewSet)
 router.register(r'users', UserViewSet)
 # pprint.pprint(router.get_urls())  # Prints created urls by router
 
@@ -27,6 +28,8 @@ urlpatterns = [
 
     path('', include(router.urls)),
     path('quiz/<str:name>/', views.quiz_list, name="quiz_list"),
+    path('suggestion/', views.NewQuestion.as_view({'post': 'create'}), name='new_question'),
+    path('suggestion/list/', views.QuestionDraftList.as_view({'get': 'list'}), name="question_draft_list"),
     path('accounts/api-auth/', include('rest_framework.urls')),
     path('accounts/api-token-auth', obtain_auth_token, name='api_token_auth'),
     path('accounts/register/', accounts.views.registration, name="register"),

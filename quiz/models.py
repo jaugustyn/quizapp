@@ -25,9 +25,13 @@ class Question(models.Model):
                                    help_text="If answer was added, select from first from the bottom")
     points = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], default=1,
                                          help_text="1 - 10 points")
+    approved = models.BooleanField(default=True, help_text="Does the question meet the rules and can be added to one of the quizzes? True or False")
 
     def __str__(self):
         return self.question
+
+    def publish(self):
+        self.save()
 
 
 class Category(models.Model):
