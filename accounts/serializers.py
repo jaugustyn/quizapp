@@ -12,7 +12,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'birth_date', 'password']
-
         extra_fields = {'password': {"write_only": True}}
 
     def save(self, **kwargs):
@@ -22,11 +21,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email=self.validated_data['email'],
         )
         password = self.validated_data['password']
-        # try:
-        #     password_validation.validate_password(password=password, user=user)
-        # except ValidationError:
-        #     raise ValidationError({'message': "Password requires sth"})
-
         user.set_password(password)
         user.save()
+
         return user

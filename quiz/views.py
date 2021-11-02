@@ -1,79 +1,107 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from rest_framework.decorators import api_view
+import django_filters
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import viewsets, generics, mixins, status
 from .models import Category, Question, Quiz, Answer
-from .serializers import CategorySerializer, QuestionSerializer, QuizSerializer
-from .forms import QuestionForm, AnswersForm,  QuestionFormSet
+from .serializers import CategorySerializer, QuestionSerializer, QuestionSerializerAdmin
 import random
-from rest_framework.renderers import TemplateHTMLRenderer
-
+from django_filters.rest_framework import DjangoFilterBackend, Filter
+from rest_framework.filters import OrderingFilter
+from django.core.exceptions import EmptyResultSet
+from django.http import Http404
 
 # Create your views here.
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
-    lookup_field = "name"
+    lookup_field = "name"  # For URLs
+
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['name']
+    ordering = "name"  # Default
 
 
 class QuestionViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
+    def get_queryset(self):
+        queryset = Question.objects.filter(approved=True)
+        category = self.request.query_params.get('category')
+        if category is not None:
+            queryset = queryset.filter(category_id=category)
 
-# class QuizViewSet(viewsets.ModelViewSet):
-#     queryset = Quiz.objects.all()
-#     serializer_class = QuizSerializer
-
-
-@api_view(['GET'])
-def quiz_list(request, name):
-    if request.method == "GET":
-        amount_of_questions = request.GET.get('limit', "2")
-        ids_list = list(Quiz.objects.values_list('question', flat=True).filter(category_id=name, question__approved=True))
-        choosen_set = random.sample(ids_list, k=int(amount_of_questions))
-        questions = Question.objects.filter(id__in=choosen_set)
-
-        serializer = QuestionSerializer(questions, many=True)
-        return Response(serializer.data)
+            #  If category doesn't exist then return all questions
+            if not queryset.exists():
+                return Question.objects.filter(approved=True)
+        return queryset
 
 
-class NewQuestion(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class NewQuestionSuggestion(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         serializer.save(approved=False)
 
-    # def post(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     serializer = QuestionSerializer(queryset, many=False)
-    #     return Response(serializer.data)
-
-    # if request.method == "POST":
-    #     form = QuestionForm(request.POST)
-    #     if form.is_valid():
-    #         question = form.save(commit=False)
-    #         question.save()
-    #         return question
-
 
 class QuestionDraftList(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = QuestionSerializer
+    serializer_class = QuestionSerializerAdmin
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['category']
 
     def get_queryset(self):
         queryset = Question.objects.filter(approved=False)
         category = self.request.query_params.get('category')
         if category is not None:
-            queryset = queryset.filter(quiz__category_id=category)
+            queryset = queryset.filter(category_id=category)
         return queryset
 
 
+class SingleQuestionDraft(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = Question.objects.filter(approved=False)
+    serializer_class = QuestionSerializerAdmin
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        # Adds approved question to the quiz from selected category
+        if 'approved' in request.data:
+            quiz = Quiz.objects.get(category_id=request.data['category'])
+            question = Question.objects.get(pk=serializer.data['id'])
+            quiz.question.add(question)
+
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_quiz(request, name):
+    if request.method == "GET":
+        amount_of_questions = request.GET.get('limit', "2")  # Query filter
+        try:
+            ids_list = list(Quiz.objects.values_list('question', flat=True).filter(category_id=name))
+            if not ids_list:
+                return Response("The quiz with the given category name does not exist")
+
+            if int(amount_of_questions) > len(ids_list):
+                choosen_set = random.sample(ids_list, k=int(len(ids_list)))  # All questions
+            else:
+                choosen_set = random.sample(ids_list, k=int(amount_of_questions))
+
+            questions = Question.objects.filter(id__in=choosen_set)
+            serializer = QuestionSerializer(questions, many=True)
+
+        except ValueError:
+            return Response("Exception: Wrong limit value")
+
+        return Response(serializer.data)

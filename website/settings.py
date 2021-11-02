@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     'quiz',
     'accounts',
+    'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
 ]
@@ -156,12 +157,12 @@ django_heroku.settings(locals())
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication', 'rest_framework.authentication.SessionAuthentication'],
-    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],  # IsAuthenticated for production
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],  # IsAuthenticated for production, AllowAny for development
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 REST_AUTH_REGISTER_SERIALIZER = {
     'REGISTER_SERIALIZER': 'accounts.serializers.RegistrationSerializer',
 }
-
 
 AUTH_USER_MODEL = 'accounts.User'

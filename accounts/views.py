@@ -1,4 +1,3 @@
-import json
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -7,8 +6,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework import viewsets, generics, status
 from .models import User
 from .serializers import RegistrationSerializer
-from .forms import RegistrationForm
 from django.contrib import auth
+from rest_framework.filters import OrderingFilter
 
 
 # Create your views here.
@@ -17,6 +16,9 @@ from django.contrib import auth
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = RegistrationSerializer
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['first_name', 'last_name', 'birth_date', 'email']
+    ordering = "last_name"  # Default
 
 
 @api_view(['POST'])
