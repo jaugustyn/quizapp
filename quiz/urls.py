@@ -5,6 +5,7 @@ from rest_framework.schemas import get_schema_view
 from rest_framework.routers import DefaultRouter
 from . import views
 import accounts.views
+import pprint
 
 router = DefaultRouter()
 router.register(r'categories', views.CategoryViewSet, basename="categories")

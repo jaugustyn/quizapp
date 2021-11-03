@@ -93,7 +93,7 @@ DATABASES = {
         'HOST': os.getenv("DB_HOST"),
         'PORT': os.getenv("DB_PORT"),
         'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0;",  # Foreign key checks
+            # "init_command": "SET foreign_key_checks = 0;",  # Foreign key checks
         }
     },
 }
@@ -139,7 +139,9 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True  # Default
+USE_UTC = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -156,7 +158,7 @@ django_heroku.settings(locals())
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication', 'rest_framework.authentication.SessionAuthentication'],
-    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],  # IsAuthenticated for production, AllowAny for development
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],  # IsAuthenticated for production, AllowAny for development
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 

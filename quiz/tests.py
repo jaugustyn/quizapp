@@ -16,7 +16,7 @@ class QuestionTestCase(APITestCase):
     def setUp(self) -> None:
         self.answer = Answer.objects.create(id=1, answer1="test_1", answer2="test_2", answer3="test_3",
                                             answer4="test_4", correct_answer="1")
-        self.question = Question.objects.create(id=1, answers_id=1, question="Does test passed?", points=3)
+        self.question = Question.objects.create(id=1, answers_id=1, question="Does test passed?", points=3, category=None)
         self.client = APIClient()
 
     def test_create_question(self):
@@ -25,10 +25,13 @@ class QuestionTestCase(APITestCase):
             'answers': {"answer1": "test_1", "answer2": "test_2", "answer3": "test_3", "answer4": "test_4",
                         "correct_answer": "4"},
             'question': "Does create test passed?",
-            'points': 2
+            'points': 2,
+            'category': None
         }
-        response = self.client.post(reverse('question-list'), self.data, format='json')
+        response = self.client.post(reverse('questions-list'), self.data, format='json')
         is_passed = response.status_code == status.HTTP_201_CREATED
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # self.assert
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -37,8 +40,9 @@ class QuestionTestCase(APITestCase):
         })
 
     def test_get_question(self):
-        response = self.client.get(reverse('question-detail', args=[self.question.id]), format='json')
+        response = self.client.get(reverse('questions-detail', args=[self.question.id]), format='json')
         is_passed = response.status_code == status.HTTP_200_OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -55,8 +59,9 @@ class QuestionTestCase(APITestCase):
             'points': 3
         }
 
-        response = self.client.put(reverse('question-detail', args=[self.question.id]), self.data, format='json')
+        response = self.client.put(reverse('questions-detail', args=[self.question.id]), self.data, format='json')
         is_passed = response.status_code == status.HTTP_200_OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -65,8 +70,9 @@ class QuestionTestCase(APITestCase):
         })
 
     def test_delete_question(self):
-        response = self.client.delete(reverse('question-detail', args=[self.question.id]), format='json')
+        response = self.client.delete(reverse('questions-detail', args=[self.question.id]), format='json')
         is_passed = response.status_code == status.HTTP_204_NO_CONTENT
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -96,8 +102,9 @@ class CategoryTestCase(APITestCase):
             'description': "Lorem ipsum",
         }
 
-        response = self.client.post(reverse('category-list'), self.data, format='json')
+        response = self.client.post(reverse('categories-list'), self.data, format='json')
         is_passed = response.status_code == status.HTTP_201_CREATED
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -106,8 +113,9 @@ class CategoryTestCase(APITestCase):
         })
 
     def test_get_category(self):
-        response = self.client.get(reverse('category-detail', args=[self.category.name]), format='json')
+        response = self.client.get(reverse('categories-detail', args=[self.category.name]), format='json')
         is_passed = response.status_code == status.HTTP_200_OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -119,8 +127,9 @@ class CategoryTestCase(APITestCase):
         self.data = {'name': 'Updated_category_name', 'image': None, 'category_url': 'Updated_slug_name',
                      'color': '#FF00A5',
                      'description': 'No description'}
-        response = self.client.put(reverse('category-detail', args=[self.category.name]), self.data, format='json')
+        response = self.client.put(reverse('categories-detail', args=[self.category.name]), self.data, format='json')
         is_passed = response.status_code == status.HTTP_200_OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -129,8 +138,9 @@ class CategoryTestCase(APITestCase):
         })
 
     def test_delete_category(self):
-        response = self.client.delete(reverse('category-detail', args=[self.category.name]), format='json')
+        response = self.client.delete(reverse('categories-detail', args=[self.category.name]), format='json')
         is_passed = response.status_code == status.HTTP_204_NO_CONTENT
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
@@ -142,6 +152,10 @@ class CategoryTestCase(APITestCase):
     def tearDownClass(cls):
         send_test_csv_report(test_results=TEST_RESULTS)
 
+
+class UserTestCase(APITestCase):
+    def setUp(self) -> None:
+        pass
 
 # Not needed...
 # class QuizTestCase(APITestCase):
