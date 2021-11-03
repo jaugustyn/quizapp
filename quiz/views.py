@@ -56,6 +56,8 @@ class QuestionDraftList(mixins.ListModelMixin, viewsets.GenericViewSet):
         category = self.request.query_params.get('category')
         if category is not None:
             queryset = queryset.filter(category_id=category)
+            if not queryset.exists():
+                return Question.objects.filter(approved=False)
         return queryset
 
 

@@ -49,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100, null=True)
     birth_date = models.DateField(null=True)
     date_joined = models.DateTimeField(default=timezone.now, editable=False)
-    avatar = models.ImageField(null=True, blank=True)
+    avatar = models.ImageField(upload_to='static/avatar/', null=True, blank=True)
     description = models.TextField(max_length=500, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

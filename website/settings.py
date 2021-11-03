@@ -92,9 +92,8 @@ DATABASES = {
         'PASSWORD': os.getenv("DB_PASSWORD"),
         'HOST': os.getenv("DB_HOST"),
         'PORT': os.getenv("DB_PORT"),
-        # Foreign key checks
         'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0;",
+            "init_command": "SET foreign_key_checks = 0;",  # Foreign key checks
         }
     },
 }
