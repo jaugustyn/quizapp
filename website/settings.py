@@ -15,7 +15,6 @@ import sys
 from pathlib import Path
 
 import django_heroku
-import rest_framework.authentication
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -93,12 +92,13 @@ DATABASES = {
         'HOST': os.getenv("DB_HOST"),
         'PORT': os.getenv("DB_PORT"),
         'OPTIONS': {
-            # "init_command": "SET foreign_key_checks = 0;",  # Foreign key checks
+            "init_command": "SET foreign_key_checks = 0;",  # Foreign key checks
         }
     },
 }
 if 'test' in sys.argv:
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
+    DATABASES['default']['OPTIONS'] = {}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -109,9 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 8,
-        }
+        # 'OPTIONS': {
+        #     'min_length': 8,
+        # }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

@@ -1,7 +1,8 @@
-from rest_framework import serializers
-from drf_writable_nested.serializers import WritableNestedModelSerializer, NestedUpdateMixin
-from .models import Category, Question, Answer, Quiz
 from django.core.validators import validate_image_file_extension, validate_slug
+from drf_writable_nested.serializers import WritableNestedModelSerializer
+from rest_framework import serializers
+
+from .models import Category, Question, Answer, Quiz
 
 
 class CategorySerializer(serializers.ModelSerializer):

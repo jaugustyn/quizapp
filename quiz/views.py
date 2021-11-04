@@ -1,14 +1,13 @@
-import django_filters
-from rest_framework.decorators import api_view, action
+import random
+
+from rest_framework import viewsets, mixins
+from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
-from rest_framework import viewsets, generics, mixins, status
+
 from .models import Category, Question, Quiz, Answer
 from .serializers import CategorySerializer, QuestionSerializer, QuestionSerializerAdmin
-import random
-from django_filters.rest_framework import DjangoFilterBackend, Filter
-from rest_framework.filters import OrderingFilter
-from django.core.exceptions import EmptyResultSet
-from django.http import Http404
+
 
 # Create your views here.
 

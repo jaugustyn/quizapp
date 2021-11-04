@@ -1,20 +1,20 @@
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from drf_writable_nested.serializers import WritableNestedModelSerializer
-from django.contrib.auth import password_validation
-from rest_framework.exceptions import ValidationError
-from .models import User
 from rest_framework.validators import UniqueValidator
+
+from .models import User
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=User.objects.all())])
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'birth_date', 'password']
         extra_fields = {'password': {"write_only": True}}
 
-    def save(self, **kwargs):
+    def create(self, validated_data):
         user = User(
             first_name=self.validated_data['first_name'],
             last_name=self.validated_data['last_name'],

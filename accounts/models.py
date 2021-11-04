@@ -1,12 +1,12 @@
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.core.validators import MinValueValidator, MaxValueValidator, validate_email
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
-from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import validate_email
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
-from django.conf import settings
 
 
 # Create your models here.

@@ -1,13 +1,14 @@
-from rest_framework.exceptions import ValidationError
+from django.contrib import auth
+from rest_framework import viewsets, generics, status
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import ValidationError
+from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from rest_framework import viewsets, generics, status
+
 from .models import User
 from .serializers import RegistrationSerializer
-from django.contrib import auth
-from rest_framework.filters import OrderingFilter
 
 
 # Create your views here.
@@ -18,7 +19,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RegistrationSerializer
     filter_backends = [OrderingFilter]
     ordering_fields = ['first_name', 'last_name', 'birth_date', 'email']
-    ordering = "last_name"  # Default
+    ordering = "last_name"  # Default ordering
 
 
 @api_view(['POST'])
@@ -71,8 +72,8 @@ def login_user(request):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def logout_user(request):
     request.user.auth_token.delete()
     auth.logout(request)
-    return Response("User logged out successfully")
+    return Response("User logged out successfully.")
