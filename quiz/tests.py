@@ -19,11 +19,14 @@ User = get_user_model()
 # QUESTION TESTS
 class QuestionTestCase(APITestCase):
     def setUp(self) -> None:
+        self.user = User.objects.create_superuser(first_name="Tester", last_name="Qwerty", email="example@test.com", password="Qwerty123")
         self.answer = Answer.objects.create(id=1, answer1="test_1", answer2="test_2", answer3="test_3",
                                             answer4="test_4", correct_answer="1")
         self.question = Question.objects.create(id=1, answers_id=1, question="Does test passed?", points=3,
                                                 category=None)
+
         self.client = APIClient()
+        self.client.login(email='example@test.com', password='Qwerty123')
 
     def test_create_question(self):
         self.data = {
@@ -93,9 +96,11 @@ class QuestionTestCase(APITestCase):
 # CATEGORY TESTS
 class CategoryTestCase(APITestCase):
     def setUp(self) -> None:
+        self.user = User.objects.create_superuser(first_name="Tester", last_name="Qwerty", email="example@test.com", password="Qwerty123")
         self.category = Category.objects.create(id=1, name='Test1', image=None, slug="test1", color="#FFFFFF",
                                                 description="Lorem ipsum")
         self.client = APIClient()
+        self.client.login(email='example@test.com', password='Qwerty123')
 
     def test_create_category(self):
         self.data = {

@@ -1,7 +1,8 @@
 import random
 
 from rest_framework import viewsets, mixins
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
@@ -12,6 +13,7 @@ from .serializers import CategorySerializer, QuestionSerializer, QuestionSeriali
 # Create your views here.
 
 
+@permission_classes([DjangoModelPermissionsOrAnonReadOnly])
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
@@ -22,6 +24,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     ordering = "name"  # Default
 
 
+@permission_classes([DjangoModelPermissionsOrAnonReadOnly])
 class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
 
@@ -37,6 +40,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+@permission_classes([IsAuthenticated])
 class NewQuestionSuggestion(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
@@ -45,6 +49,7 @@ class NewQuestionSuggestion(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer.save(approved=False)
 
 
+@permission_classes([IsAdminUser])
 class QuestionDraftList(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = QuestionSerializerAdmin
     filter_backends = [OrderingFilter]
@@ -60,6 +65,7 @@ class QuestionDraftList(mixins.ListModelMixin, viewsets.GenericViewSet):
         return queryset
 
 
+@permission_classes([IsAdminUser])
 class SingleQuestionDraft(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = Question.objects.filter(approved=False)
     serializer_class = QuestionSerializerAdmin
@@ -86,6 +92,7 @@ class SingleQuestionDraft(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mi
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_quiz(request, name):
     if request.method == "GET":
         amount_of_questions = request.GET.get('limit', "2")  # Query filter

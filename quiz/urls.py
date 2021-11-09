@@ -48,7 +48,4 @@ urlpatterns = [
     path('accounts/register/', accounts.views.registration, name="register"),
     path('accounts/login/', accounts.views.login_user, name='login_user'),
     path('accounts/logout/', accounts.views.logout_user, name="logout_user"),
-
-    #  Authtoken
-    path('api-auth/', include('rest_framework.urls')),
 ]
