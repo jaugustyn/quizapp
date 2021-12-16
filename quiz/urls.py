@@ -15,11 +15,11 @@ router.register(r'users', accounts.views.UserViewSet, basename="users")
 
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api', include(router.urls)),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
 
     # Optional UI - Docs:
-    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # Swagger as main page
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     #  Quiz
@@ -28,7 +28,9 @@ urlpatterns = [
     #  User suggestions for new questions
     path('suggestion/', views.NewQuestionSuggestion.as_view({'post': 'create'}), name='new_question_suggestion'),
     path('suggestion/list/', views.QuestionDraftList.as_view({'get': 'list'}), name="question_draft_list"),
-    path('suggestion/list/<pk>/', views.SingleQuestionDraft.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'}), name="question_suggestion_details"),
+    path('suggestion/list/<pk>/', views.SingleQuestionDraft.as_view(
+        {'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'}),
+         name="question_suggestion_details"),
 
     #  User accounts
     path('accounts/api-token-auth', obtain_auth_token, name='api_token_auth'),

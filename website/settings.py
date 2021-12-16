@@ -183,7 +183,6 @@ SPECTACULAR_SETTINGS = {
     'SERVE_AUTHENTICATION': None,
 
     "SWAGGER_UI_SETTINGS": {
-        # "deepLinking": True,
         'filter': True,
         "displayOperationId": True,
     },

@@ -186,7 +186,6 @@ class RegistrationTestCase(APITestCase):
         token = Token.objects.get(user=user)
         self.assertEqual(response.data['token'], token.key)
 
-        print(response.data)
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
             "result": inspect.currentframe().f_code.co_name,
