@@ -1,32 +1,40 @@
 from django.contrib import auth
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, status, mixins
+from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
 from .models import User
-from .serializers import RegistrationSerializer
+from .serializers import RegistrationSerializer, LoginSerializer
+
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, extend_schema_field, OpenApiTypes
 
 
 # Create your views here.
 
 
-@permission_classes([IsAuthenticated, DjangoModelPermissions])
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = RegistrationSerializer
+    permission_classes = [IsAdminUser]
+
     filter_backends = [OrderingFilter]
     ordering_fields = ['first_name', 'last_name', 'birth_date', 'email']
     ordering = "last_name"  # Default ordering
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def registration(request):
-    if request.method == 'POST':
+@extend_schema(
+    request=RegistrationSerializer,
+    description="Date formats: DD-MM-YYYY, DD.MM.YYYY, YYYY-MM-DD, YYYY.MM.DD",
+)
+class Registration(generics.GenericAPIView):
+    serializer_class = RegistrationSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
         try:
             serializer = RegistrationSerializer(data=request.data)
             data = {}
@@ -34,9 +42,7 @@ def registration(request):
                 account = serializer.save()
                 account.save()
                 token = Token.objects.get_or_create(user=account)[0].key
-                data['first_name'] = account.first_name
-                data['last_name'] = account.last_name
-                data['response'] = "Successfully registered a new user."
+                data['message'] = "Successfully registered a new user."
                 data['email'] = account.email
                 data["token"] = token
             else:
@@ -46,42 +52,50 @@ def registration(request):
         return Response(data)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_user(request):
-    if request.method == 'POST':
+@extend_schema(
+    request=LoginSerializer,
+)
+class Login_user(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
         data = {}
         body = request.data
         try:
             email = body['email']
             password = body['password']
             user = User.objects.get(email=email)
+            token = Token.objects.get_or_create(user=user)[0].key
         except BaseException as e:
-            raise ValidationError({'Invalid data': f'{str(e)}'})
-        token = Token.objects.get_or_create(user=user)[0].key
+            raise ValidationError({'400': f'Invalid data: {str(e)}'})
 
         if not user.check_password(password):
-            raise ValidationError({'message': "Incorrect login information. Please check your credentials and try again."})
-
+            raise ValidationError(
+                {'400': "Incorrect login information. Please check your credentials and try again."})
         if user:
             if user.is_active:
                 auth.login(request, user)
                 data['message'] = "User logged in."
                 data['email'] = user.email
+                data['token'] = token
 
-                return Response({'data': data, 'token': token})
+                return Response(data, status=status.HTTP_200_OK)
             else:
                 raise ValidationError({'400': f'Account not active'})
         else:
             raise ValidationError({'400': f'User does not exist'})
 
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def logout_user(request):
-    try:
-        request.user.auth_token.delete()
-        auth.logout(request)
-        return Response("User logged out successfully.")
-    except AttributeError:
-        return Response("You must be logged in first.")
+class LogoutUser(APIView):
+    serializer_class = None
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request):
+        try:
+            request.user.auth_token.delete()
+            auth.logout(request)
+            return Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
+        except AttributeError as e:
+            return Response({"message": "You must be logged in first."})

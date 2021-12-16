@@ -164,15 +164,17 @@ class RegistrationTestCase(APITestCase):
         self.data = {
             "first_name": "Foo",
             "last_name": "Bar",
+            "birth_date": "2000-10-30",
             "email": "Foobar@example.com",
             "password": "TestingPassword",
         }
-        self.user = User.objects.create_user(first_name="Tester", last_name="Qwerty", email="example@test.com",
-                                             password="Qwerty123")
+        self.user = User.objects.create_user(first_name="Tester", last_name="Qwerty", birth_date="1990-10-10", email="Boobar2@example.com",
+                                             password="Qwerty123#")
         self.client = APIClient()
 
     def test_create_user(self):
         response = self.client.post(reverse('register'), self.data, format='json')
+        print(response.content)
 
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -184,10 +186,11 @@ class RegistrationTestCase(APITestCase):
         token = Token.objects.get(user=user)
         self.assertEqual(response.data['token'], token.key)
 
+        print(response.data)
         TEST_RESULTS.append({
             "test_name": "Passed" if is_passed else "Failed",
             "result": inspect.currentframe().f_code.co_name,
-            "test_description": "Response: " + ''.join(response.data['response'])
+            "test_description": "Response: " + ''.join(response.data['message'])
         })
 
     def test_if_email_is_unique(self):

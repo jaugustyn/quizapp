@@ -15,6 +15,8 @@ import sys
 from pathlib import Path
 
 import django_heroku
+
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -48,8 +50,8 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'drf_spectacular',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -134,6 +136,7 @@ PASSWORD_HASHERS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Europe/Warsaw'
+DATE_INPUT_FORMATS = ['%d-%m-%Y', '%Y-%m-%d', '%d.%m.%Y', '%Y.%m.%d', '%d/%m/%Y', '%Y/%m/%d']
 
 USE_I18N = True
 
@@ -142,24 +145,25 @@ USE_L10N = True
 # USE_TZ = True  # Default
 USE_UTC = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 
+django_heroku.settings(locals())
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-django_heroku.settings(locals())
-
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication', 'rest_framework.authentication.SessionAuthentication'],
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication',
+                                       'rest_framework.authentication.SessionAuthentication'],
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 REST_AUTH_REGISTER_SERIALIZER = {
@@ -167,3 +171,20 @@ REST_AUTH_REGISTER_SERIALIZER = {
 }
 
 AUTH_USER_MODEL = 'accounts.User'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'QUIZAPP RESTAPI',
+    'DESCRIPTION': 'Quizapp',
+    'VERSION': '1.0.0',
+
+    # OTHER SETTINGS
+    # 'SERVE_PUBLIC': False,
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_AUTHENTICATION': None,
+
+    "SWAGGER_UI_SETTINGS": {
+        # "deepLinking": True,
+        'filter': True,
+        "displayOperationId": True,
+    },
+}

@@ -28,7 +28,7 @@ class QuestionSerializer(WritableNestedModelSerializer):
         fields = ['id', 'question', 'points', 'answers', 'category']
 
 
-class QuestionSerializerAdmin(WritableNestedModelSerializer):
+class QuestionAdminSerializer(WritableNestedModelSerializer):
     answers = AnswerSerializer(many=False)
     id = serializers.IntegerField(read_only=True)
 

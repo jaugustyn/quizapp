@@ -45,12 +45,12 @@ class AccountManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, max_length=100, validators=[validate_email])
-    first_name = models.CharField(max_length=50, null=True)
-    last_name = models.CharField(max_length=100, null=True)
+    first_name = models.CharField(max_length=50, null=False)
+    last_name = models.CharField(max_length=100, null=False)
     birth_date = models.DateField(null=True)
-    date_joined = models.DateTimeField(default=timezone.now, editable=False)
     avatar = models.ImageField(upload_to='static/avatar/', null=True, blank=True)
-    description = models.TextField(max_length=500, blank=True, null=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
+    date_joined = models.DateTimeField(default=timezone.now, editable=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -58,6 +58,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
     objects = AccountManager()
+
+    class Meta:
+        managed = True
 
     def __str__(self):
         return self.email
