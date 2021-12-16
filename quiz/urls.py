@@ -15,29 +15,29 @@ router.register(r'users', accounts.views.UserViewSet, basename="users")
 
 
 urlpatterns = [
-    path('api/', include(router.urls)),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
 
     # Optional UI - Docs:
     path('', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # Swagger as main page
+    path('', include(router.urls)),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     #  Quiz
-    path('api/quiz/<str:name>/', views.GetQuiz.as_view(), name="get_quiz"),
+    path('quiz/<str:name>/', views.GetQuiz.as_view(), name="get_quiz"),
 
     #  User suggestions for new questions
-    path('api/suggestion/', views.NewQuestionSuggestion.as_view({'post': 'create'}), name='new_question_suggestion'),
-    path('api/suggestion/list/', views.QuestionDraftList.as_view({'get': 'list'}), name="question_draft_list"),
-    path('api/suggestion/list/<pk>/', views.SingleQuestionDraft.as_view(
+    path('suggestion/', views.NewQuestionSuggestion.as_view({'post': 'create'}), name='new_question_suggestion'),
+    path('suggestion/list/', views.QuestionDraftList.as_view({'get': 'list'}), name="question_draft_list"),
+    path('suggestion/list/<pk>/', views.SingleQuestionDraft.as_view(
         {'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'}),
          name="question_suggestion_details"),
 
     #  User accounts
-    path('api/accounts/api-token-auth', obtain_auth_token, name='api_token_auth'),
-    path('api/accounts/register/', accounts.views.Registration.as_view(), name="register"),
-    path('api/accounts/login/', accounts.views.Login_user.as_view(), name='login_user'),
-    path('api/accounts/logout/', accounts.views.LogoutUser.as_view(), name="logout_user"),
+    path('accounts/api-token-auth', obtain_auth_token, name='api_token_auth'),
+    path('accounts/register/', accounts.views.Registration.as_view(), name="register"),
+    path('accounts/login/', accounts.views.Login_user.as_view(), name='login_user'),
+    path('accounts/logout/', accounts.views.LogoutUser.as_view(), name="logout_user"),
 
     #  Login to the Browsable API
-    path('api/api-auth/', include('rest_framework.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
