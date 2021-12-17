@@ -29,7 +29,7 @@ urlpatterns = [
     path('suggestion/', views.NewQuestionSuggestion.as_view({'post': 'create'}), name='new_question_suggestion'),
     path('suggestion/list/', views.QuestionDraftList.as_view({'get': 'list'}), name="question_draft_list"),
     path('suggestion/list/<pk>/', views.SingleQuestionDraft.as_view(
-        {'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'}),
+        {'get': 'retrieve', 'delete': 'destroy', 'patch': 'partial_update'}),
          name="question_suggestion_details"),
 
     #  User accounts

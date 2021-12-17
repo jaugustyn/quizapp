@@ -67,7 +67,7 @@ class QuestionTestCase(APITestCase):
             'points': 3
         }
 
-        response = self.client.put(reverse('questions-detail', args=[self.question.id]), self.data, format='json')
+        response = self.client.patch(reverse('questions-detail', args=[self.question.id]), self.data, format='json')
         is_passed = response.status_code == status.HTTP_200_OK
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -137,7 +137,7 @@ class CategoryTestCase(APITestCase):
         self.data = {'name': 'Updated_category_name', 'image': None, 'category_url': 'Updated_slug_name',
                      'color': '#FF00A5',
                      'description': 'No description'}
-        response = self.client.put(reverse('categories-detail', args=[self.category.name]), self.data, format='json')
+        response = self.client.patch(reverse('categories-detail', args=[self.category.name]), self.data, format='json')
         is_passed = response.status_code == status.HTTP_200_OK
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -174,7 +174,6 @@ class RegistrationTestCase(APITestCase):
 
     def test_create_user(self):
         response = self.client.post(reverse('register'), self.data, format='json')
-        print(response.content)
 
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
