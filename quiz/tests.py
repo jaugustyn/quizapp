@@ -99,6 +99,7 @@ class CategoryTestCase(APITestCase):
         self.user = User.objects.create_superuser(first_name="Tester", last_name="Qwerty", email="example@test.com", password="Qwerty123")
         self.category = Category.objects.create(id=1, name='Test1', image=None, slug="test1", color="#FFFFFF",
                                                 description="Lorem ipsum")
+        self.quiz = Quiz.objects.create(id=1, category_id="Test1", description="Lorem ipsum")
         self.client = APIClient()
         self.client.login(email='example@test.com', password='Qwerty123')
 
