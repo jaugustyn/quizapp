@@ -11,7 +11,6 @@ Aplikacja ma testy jednostkowe do pytań, kategorii rejestracji użytkowników.
 
 *Podgląd aplikacji: **[LINK](https://quiz-app-restapi.herokuapp.com/)***
 
-![zdjecie](images/swagger.png)
 
 ### Użyte technologie:
 - django

@@ -1,13 +1,8 @@
 Django==4.0
 djangorestframework
-markdown
 django-filter
-Pillow
+drf-spectacular
+drf-writable-nested
 python-dotenv
 mysqlclient
-pyyaml
-uritemplate
-gunicorn
-django-heroku
-drf-writable-nested
-drf-spectacular
+Pillow
