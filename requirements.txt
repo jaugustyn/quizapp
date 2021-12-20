@@ -7,4 +7,5 @@ python-dotenv
 mysqlclient
 Pillow
 
+gunicorn
 django-heroku
