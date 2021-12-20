@@ -6,3 +6,5 @@ drf-writable-nested
 python-dotenv
 mysqlclient
 Pillow
+
+django-heroku

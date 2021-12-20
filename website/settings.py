@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 import sys
+import django_heroku
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -172,3 +173,5 @@ SPECTACULAR_SETTINGS = {
         "displayOperationId": True,
     },
 }
+
+django_heroku.settings(locals())
