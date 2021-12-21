@@ -38,6 +38,6 @@ urlpatterns = [
     path('accounts/login/', accounts.views.Login_user.as_view(), name='login_user'),
     path('accounts/logout/', accounts.views.LogoutUser.as_view(), name="logout_user"),
 
-    #  Login to the Browsable API
-    path('api-auth/', include('rest_framework.urls')),
+    #  Login to the Browsable API, if enabled then problem with CSRF in swagger appears.
+    # path('api-auth/', include('rest_framework.urls')),
 ]
