@@ -1,6 +1,9 @@
 .idea/
 myenv/
 test_csv_report.csv
+quiz/migrations/
+accounts/migrations
+static/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
