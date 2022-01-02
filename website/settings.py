@@ -171,6 +171,8 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_SETTINGS": {
         'filter': True,
         "displayOperationId": True,
+        'persistAuthorization': True,
+        'withCredentials': False,
     },
 }
 
