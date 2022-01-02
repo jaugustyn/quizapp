@@ -1,6 +1,7 @@
 .idea/
 myenv/
 quiz/migrations/
+quiz/templates/
 accounts/migrations/
 static/
 test_csv_report.csv
