@@ -2,6 +2,7 @@
 myenv/
 test_csv_report.csv
 static/
+quiz/templates
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
