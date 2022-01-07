@@ -81,6 +81,19 @@ class QuestionViewSet(viewsets.ModelViewSet):
                 return Question.objects.filter(approved=True)
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        # Adds question to the quiz from selected category
+        quiz = Quiz.objects.get(category_id=request.data['category'])
+        question = Question.objects.get(pk=serializer.data['id'])
+        quiz.question.add(question)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class NewQuestionSuggestion(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Question.objects.all()
@@ -147,16 +160,17 @@ class GetQuiz(APIView):
     serializer_class = None
     permission_classes = [AllowAny]
 
-    def get(self, request, name, format=None):
+    @staticmethod
+    def get(request, name, format=None):
         amount_of_questions = request.GET.get('limit', "2")  # Query filter
         try:
-            ids_list = list(Quiz.objects.values_list('question', flat=True).filter(category_id=name))
+            ids_list = list(Quiz.objects.values_list('question', flat=True).filter(category__name__iexact=name))
             if not ids_list:
                 return Response({"message": "The quiz with the given category name does not exist"},
                                 status=status.HTTP_404_NOT_FOUND)
 
-            if int(amount_of_questions) > len(ids_list):  # If someone wants more questions than are in DB then return 20 questions
-                choosen_set = random.sample(ids_list, k=20)
+            if int(amount_of_questions) > len(ids_list):  # If someone wants more questions than are in DB then return 1 questions
+                choosen_set = random.sample(ids_list, k=1)
             else:
                 choosen_set = random.sample(ids_list, k=int(amount_of_questions))
 
