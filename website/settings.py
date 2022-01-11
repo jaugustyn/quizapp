@@ -88,12 +88,17 @@ DATABASES = {
         'USER': os.getenv("DB_USER"),
         'PASSWORD': os.getenv("DB_PASSWORD"),
         'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT")
+        'PORT': os.getenv("DB_PORT"),
+        "OPTIONS": {
+            "init_command": "SET foreign_key_checks = 0;"
+        },
     }
 }
+
 if 'test' in sys.argv:
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
     DATABASES['default']['OPTIONS'] = {}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

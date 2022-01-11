@@ -1,5 +1,5 @@
 from django.contrib import auth
-from rest_framework import viewsets, generics, status, mixins
+from rest_framework import viewsets, generics, status
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .models import User
 from .serializers import RegistrationSerializer, LoginSerializer
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, extend_schema_field, OpenApiTypes
+from drf_spectacular.utils import extend_schema
 
 
 # Create your views here.
