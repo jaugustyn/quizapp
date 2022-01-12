@@ -103,13 +103,15 @@ class QuestionViewSet(viewsets.ModelViewSet):
         # Updates question category
         try:
             old_quiz = Quiz.objects.get(question=instance.id)
-            question = Question.objects.get(id=instance.id)
-            old_quiz.question.remove(question)
-            quiz = Quiz.objects.get(category_id=request.data['category'])
-            question = Question.objects.get(pk=serializer.data["id"])
-            quiz.question.add(question)
-        except KeyError:
+            question_old = Question.objects.get(id=instance.id)
+            old_quiz.question.remove(question_old)  # Removes old version of question
+        except:
             pass
+        finally:
+            if instance.category is not None:
+                quiz = Quiz.objects.get(category_id=request.data['category'])
+                question = Question.objects.get(pk=serializer.data["id"])
+                quiz.question.add(question)
 
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
