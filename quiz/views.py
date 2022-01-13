@@ -2,7 +2,7 @@ import random
 
 from rest_framework import viewsets, mixins
 from rest_framework.views import APIView, status
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
@@ -19,7 +19,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
     lookup_field = "name"  # For URLs
     filter_backends = [OrderingFilter]
@@ -32,7 +32,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        # Also creates quiz with its category name
+        # Creates quiz with this category name
         quiz = Quiz.objects.create(category_id=request.data['name'], description=f"{request.data['name']} quiz")
         quiz.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -43,12 +43,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
-        # Also updates name of created quiz, but requires foreign_key checks set to 0
-        quiz = Quiz.objects.filter(category_id=str(instance)).first()
-        quiz_serializer = QuizSerializer(quiz, data={'category_id': request.data["name"]}, partial=partial)
-        quiz_serializer.is_valid(raise_exception=True)
-        quiz_serializer.update(quiz, validated_data={'category_id': request.data["name"]})
-        quiz_serializer.save()
+        # Updates questions and quiz category, but requires foreign_key checks set to 0 to work properly (its included in settings)
+        Quiz.objects.filter(category_id=instance.name).update(category_id=request.data["name"])
+        Question.objects.filter(category=instance).update(category=request.data["name"])
 
         self.perform_update(serializer)
 
@@ -66,7 +63,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class QuestionViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
     serializer_class = QuestionSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Question.objects.filter(approved=True)
@@ -85,7 +82,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        # Adds question to the quiz from selected category
+        # Adds question to the quiz from chosen category
         if request.data['category'] is not None:
             quiz = Quiz.objects.get(category_id=request.data['category'])
             question = Question.objects.get(pk=serializer.data['id'])
@@ -104,7 +101,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         try:
             old_quiz = Quiz.objects.get(question=instance.id)
             question_old = Question.objects.get(id=instance.id)
-            old_quiz.question.remove(question_old)  # Removes old version of question
+            old_quiz.question.remove(question_old)  # Removes old version of question from quiz
         except:
             pass
         finally:
@@ -186,7 +183,8 @@ class GetQuiz(APIView):
     serializer_class = None
     permission_classes = [AllowAny]
 
-    def get(self, request, name, format=None):
+    @staticmethod
+    def get(request, name, format=None):
         amount_of_questions = request.GET.get('limit', "2")  # Query filter
         try:
             ids_list = list(Quiz.objects.values_list('question', flat=True).filter(category_id=name))
@@ -194,8 +192,7 @@ class GetQuiz(APIView):
                 return Response({"message": "The quiz with the given category name does not exist"},
                                 status=status.HTTP_404_NOT_FOUND)
 
-            if int(amount_of_questions) > len(
-                    ids_list):  # If someone wants more questions than are in DB then return just 1 question
+            if int(amount_of_questions) > len(ids_list):  # If someone wants more questions than are in DB then return just 1 question
                 choosen_set = random.sample(ids_list, k=1)
             else:
                 choosen_set = random.sample(ids_list, k=int(amount_of_questions))
@@ -204,6 +201,6 @@ class GetQuiz(APIView):
             serializer = QuestionSerializer(questions, many=True)
 
         except ValueError:
-            return Response("ValueError: Wrong limit value in query filter")
+            return Response({"message": "ValueError - Wrong limit value in query filter"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
