@@ -167,7 +167,7 @@ class SingleQuestionDraft(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mi
             instance._prefetched_objects_cache = {}
 
         # Adds approved question to the quiz from selected category
-        if 'approved' in request.data:
+        if request.data["approved"]:
             quiz = Quiz.objects.get(category_id=request.data['category'])
             question = Question.objects.get(pk=serializer.data['id'])
             quiz.question.add(question)

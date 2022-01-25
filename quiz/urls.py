@@ -10,7 +10,7 @@ import pprint
 router = DefaultRouter()
 router.register(r'categories', views.CategoryViewSet, basename="categories")
 router.register(r'questions', views.QuestionViewSet, basename="questions")
-router.register(r'users', accounts.views.UserViewSet, basename="users")
+router.register(r'accounts/users', accounts.views.UserViewSet, basename="users")
 # pprint.pprint(router.get_urls())  # Prints created urls by router
 
 
@@ -38,6 +38,6 @@ urlpatterns = [
     path('accounts/login/', accounts.views.Login_user.as_view(), name='login_user'),
     path('accounts/logout/', accounts.views.LogoutUser.as_view(), name="logout_user"),
 
-    #  Login to the default browsable API, if enabled then problem with CSRF in swagger appears.
-    # path('api-auth/', include('rest_framework.urls')),
+    #  Login to the default browsable API
+    path('api-auth/', include('rest_framework.urls')),
 ]

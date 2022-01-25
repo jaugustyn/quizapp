@@ -36,6 +36,8 @@ class Registration(generics.GenericAPIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return Response({"message": "You already have an account"})
         try:
             serializer = RegistrationSerializer(data=request.data)
             data = {}
@@ -62,6 +64,8 @@ class Login_user(generics.GenericAPIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return Response({"message": "You are already logged in."})
         data = {}
         body = request.data
         try:
