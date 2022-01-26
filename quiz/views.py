@@ -2,20 +2,18 @@ import random
 
 from rest_framework import viewsets, mixins
 from rest_framework.views import APIView, status
-from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, \
-    DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
-from .models import Category, Question, Quiz, Answer
-from .serializers import CategorySerializer, QuestionSerializer, QuestionAdminSerializer, QuizSerializer
+from .models import Category, Question, Quiz
+from .serializers import CategorySerializer, QuestionSerializer, QuestionAdminSerializer
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, extend_schema_field, \
-    extend_schema_serializer, OpenApiTypes, extend_schema_view
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, extend_schema_view
 
 
 # Create your views here.
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
@@ -34,7 +32,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        # Also creates quiz with its category name
+        # Creates quiz with this category name
         quiz = Quiz.objects.create(category_id=request.data['name'], description=f"{request.data['name']} quiz")
         quiz.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -45,12 +43,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
-        # Also updates name of created quiz
-        test = Quiz.objects.filter(category_id=self.get_object()).first()
-        quiz_serializer = QuizSerializer(instance=test, data={'category_id': request.data["name"]}, partial=partial)
-        quiz_serializer.is_valid(raise_exception=True)
-        quiz_serializer.update(instance=test, validated_data={'category_id': request.data["name"]})
-        quiz_serializer.save()
+        # Updates questions and quiz category, but requires foreign_key checks set to 0 to work properly (its included in settings)
+        Quiz.objects.filter(category_id=instance.name).update(category_id=request.data["name"])
+        Question.objects.filter(category=instance).update(category=request.data["name"])
 
         self.perform_update(serializer)
 
@@ -80,6 +75,47 @@ class QuestionViewSet(viewsets.ModelViewSet):
             if not queryset.exists():
                 return Question.objects.filter(approved=True)
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        # Adds question to the quiz from chosen category
+        if request.data['category'] is not None:
+            quiz = Quiz.objects.get(category_id=request.data['category'])
+            question = Question.objects.get(pk=serializer.data['id'])
+            quiz.question.add(question)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Updates question category
+        try:
+            old_quiz = Quiz.objects.get(question=instance.id)
+            question_old = Question.objects.get(id=instance.id)
+            old_quiz.question.remove(question_old)  # Removes old version of question from quiz
+        except:
+            pass
+        finally:
+            if instance.category is not None:
+                quiz = Quiz.objects.get(category_id=request.data['category'])
+                question = Question.objects.get(pk=serializer.data["id"])
+                quiz.question.add(question)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 
 class NewQuestionSuggestion(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -131,7 +167,7 @@ class SingleQuestionDraft(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mi
             instance._prefetched_objects_cache = {}
 
         # Adds approved question to the quiz from selected category
-        if 'approved' in request.data:
+        if request.data["approved"]:
             quiz = Quiz.objects.get(category_id=request.data['category'])
             question = Question.objects.get(pk=serializer.data['id'])
             quiz.question.add(question)
@@ -147,7 +183,8 @@ class GetQuiz(APIView):
     serializer_class = None
     permission_classes = [AllowAny]
 
-    def get(self, request, name, format=None):
+    @staticmethod
+    def get(request, name, format=None):
         amount_of_questions = request.GET.get('limit', "2")  # Query filter
         try:
             ids_list = list(Quiz.objects.values_list('question', flat=True).filter(category_id=name))
@@ -155,8 +192,8 @@ class GetQuiz(APIView):
                 return Response({"message": "The quiz with the given category name does not exist"},
                                 status=status.HTTP_404_NOT_FOUND)
 
-            if int(amount_of_questions) > len(ids_list):  # If someone wants more questions than are in DB then return 20 questions
-                choosen_set = random.sample(ids_list, k=20)
+            if int(amount_of_questions) > len(ids_list):  # If someone wants more questions than are in DB then return just 1 question
+                choosen_set = random.sample(ids_list, k=1)
             else:
                 choosen_set = random.sample(ids_list, k=int(amount_of_questions))
 
@@ -164,6 +201,6 @@ class GetQuiz(APIView):
             serializer = QuestionSerializer(questions, many=True)
 
         except ValueError:
-            return Response("ValueError: Wrong limit value in query filter")
+            return Response({"message": "ValueError - Wrong limit value in query filter"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
