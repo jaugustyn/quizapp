@@ -13,11 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 import sys
 from pathlib import Path
-
-import django_heroku
-
-
 from dotenv import load_dotenv
+import django_heroku
 
 load_dotenv()
 
@@ -33,7 +30,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://quiz-app-restapi.herokuapp.com']
+ALLOWED_HOSTS = ['https://quiz-app-ver1.herokuapp.com/', '127.0.0.1']
 
 # Application definition
 
@@ -98,6 +95,7 @@ DATABASES = {
         }
     },
 }
+
 if 'test' in sys.argv:
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
     DATABASES['default']['OPTIONS'] = {}
@@ -111,9 +109,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        # 'OPTIONS': {
-        #     'min_length': 8,
-        # }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -161,7 +156,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication',
                                        'rest_framework.authentication.SessionAuthentication'],
-    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
@@ -184,7 +179,6 @@ SPECTACULAR_SETTINGS = {
 
     "SWAGGER_UI_SETTINGS": {
         'filter': True,
-        'displayOperationId': True,
-        'persistAuthorization': True
+        "displayOperationId": True,
     },
 }
