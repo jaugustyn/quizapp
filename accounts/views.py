@@ -1,5 +1,5 @@
 from django.contrib import auth
-from rest_framework import viewsets, generics, status, mixins
+from rest_framework import viewsets, generics, status
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .models import User
 from .serializers import RegistrationSerializer, LoginSerializer
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, extend_schema_field, OpenApiTypes
+from drf_spectacular.utils import extend_schema
 
 
 # Create your views here.
@@ -34,7 +34,10 @@ class Registration(generics.GenericAPIView):
     serializer_class = RegistrationSerializer
     permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return Response({"message": "You already have an account"})
         try:
             serializer = RegistrationSerializer(data=request.data)
             data = {}
@@ -59,7 +62,10 @@ class Login_user(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return Response({"message": "You are already logged in."})
         data = {}
         body = request.data
         try:
@@ -68,11 +74,11 @@ class Login_user(generics.GenericAPIView):
             user = User.objects.get(email=email)
             token = Token.objects.get_or_create(user=user)[0].key
         except BaseException as e:
-            raise ValidationError({'400': f'Invalid data: {str(e)}'})
+            raise ValidationError({'message': f'Bad request - Invalid data: {str(e)}'})
 
         if not user.check_password(password):
             raise ValidationError(
-                {'400': "Incorrect login information. Please check your credentials and try again."})
+                {'message': "Incorrect login information. Please check your credentials and try again."})
         if user:
             if user.is_active:
                 auth.login(request, user)
@@ -82,9 +88,9 @@ class Login_user(generics.GenericAPIView):
 
                 return Response(data, status=status.HTTP_200_OK)
             else:
-                raise ValidationError({'400': f'Account not active'})
+                raise ValidationError({'message': f'Account not active'})
         else:
-            raise ValidationError({'400': f'User does not exist'})
+            raise ValidationError({'message': f'User does not exist'})
 
 
 class LogoutUser(APIView):
