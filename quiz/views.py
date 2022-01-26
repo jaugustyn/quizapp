@@ -2,12 +2,12 @@ import random
 
 from rest_framework import viewsets, mixins
 from rest_framework.views import APIView, status
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, DjangoModelPermissionsOrAnonReadOnly
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
-from .models import Category, Question, Quiz, Answer
-from .serializers import CategorySerializer, QuestionSerializer, QuestionAdminSerializer, QuizSerializer
+from .models import Category, Question, Quiz
+from .serializers import CategorySerializer, QuestionSerializer, QuestionAdminSerializer
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, extend_schema_view
 
