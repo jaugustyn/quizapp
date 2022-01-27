@@ -16,13 +16,25 @@ Aplikacja ma testy jednostkowe do pytań, kategorii i rejestracji użytkowników
 - DRF
 
 ### Instalacja:
-> git clone https://github.com/jaugustyn/quizapp.git \
-> ***Stwórz środowisko wirtualne: [LINK](https://www.geeksforgeeks.org/creating-python-virtual-environment-windows-linux/)*** \
-> pip install -r requirements.txt \
-> ***Wygeneruj secret_key:*** python manage.py shell -c 'from django.core.management import utils; print(utils.get_random_secret_key())' \
-> ***Stwórz plik ".env" i dodaj w nim:*** SECRET_KEY = < generated_key > \
-> py manage.py makemigrations quiz, accounts \
-> py manage.py migrate \
-> py manage.py runserver
+
+### Instalacja:
+
+**1. Pobranie projektu** \
+```git clone https://github.com/jaugustyn/quizapp.git ```
+
+**2. Stwórz środowisko wirtualne:** \
+``` virtualenv env ```
+
+**3. Instalacja potrzebnych bibliotek:** \
+``` pip install -r requirements.txt ```
+
+**4. Wygeneruj secret_key:** \
+```python python manage.py shell -c 'from django.core.management import utils; print(utils.get_random_secret_key())' ```
+
+**5. Stwórz plik ".env" i dodaj w nim:**  \
+  ```SECRET_KEY = < generated_key >  ```
+
+**6. Stworzenie migracji i uruchomienie serwera:**  
+```bash  py manage.py makemigrations quiz, accounts \  py manage.py migrate \  py manage.py runserver  ```
 
 **Enjoy**
