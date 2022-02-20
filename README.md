@@ -22,7 +22,7 @@ Aplikacja ma testy jednostkowe do pytań, kategorii i rejestracji użytkowników
 git clone https://github.com/jaugustyn/quizapp.git
 ```
 
-**2. Stwórz środowisko wirtualne:**
+**2. Stwórz i aktywuj środowisko wirtualne:**
 ```
 virtualenv env
 ```
@@ -34,7 +34,7 @@ pip install -r requirements.txt
 
 **4. Wygeneruj secret_key:**
 ```
-python python manage.py shell -c 'from django.core.management import utils; print(utils.get_random_secret_key())'
+python manage.py shell -c 'from django.core.management import utils; print(utils.get_random_secret_key())'
 ```
 
 **5. Stwórz plik ".env" i dodaj w nim:** 
