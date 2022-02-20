@@ -44,7 +44,7 @@ SECRET_KEY = "generated_key"
 
 **6. Stworzenie migracji i uruchomienie serwera:**  
 ```
-bash  py manage.py makemigrations quiz, accounts \  py manage.py migrate \  py manage.py runserver
+bash  python manage.py makemigrations quiz, accounts \  python manage.py migrate \  python manage.py runserver
 ```
 
 **Enjoy**
