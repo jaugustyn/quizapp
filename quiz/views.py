@@ -22,7 +22,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
-    lookup_field = "name"  # For URLs
+    lookup_field = "slug"  # For URLs
     filter_backends = [OrderingFilter]
     ordering_fields = ['name']
     ordering = "name"  # Default
