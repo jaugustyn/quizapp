@@ -1,13 +1,15 @@
 from django.core.validators import validate_image_file_extension, validate_slug
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
+from .validators import validate_img_file_extension
+
 
 from .models import Category, Question, Answer, Quiz
 
 
 class CategorySerializer(serializers.ModelSerializer):
     category_url = serializers.SlugField(source='slug', validators=[validate_slug])
-    image = serializers.ImageField(use_url=True, allow_null=True, validators=[validate_image_file_extension])
+    image = serializers.FileField(use_url=True, allow_null=True, validators=[validate_img_file_extension])
 
     class Meta:
         model = Category

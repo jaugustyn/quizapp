@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from django.db import models
+from .validators import validate_img_file_extension
 
 
 # Create your models here.
@@ -20,7 +21,7 @@ class Answer(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=25, unique=True)
-    image = models.ImageField(upload_to='static/img/', blank=True, null=True)
+    image = models.FileField(upload_to='static/img/', blank=True, null=True, validators=[validate_img_file_extension])
     slug = models.SlugField(unique=True, null=False, help_text="Category_url", db_column="Category_url")
     color = models.CharField(max_length=10, default="#")  # For frontend guy
     description = models.TextField(max_length=500, default="Category description")
