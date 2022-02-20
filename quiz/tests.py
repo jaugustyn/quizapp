@@ -125,7 +125,7 @@ class CategoryTestCase(APITestCase):
         })
 
     def test_get_category(self):
-        response = self.client.get(reverse('categories-detail', args=[self.category.name]), format='json')
+        response = self.client.get(reverse('categories-detail', args=[self.category.slug]), format='json')
         is_passed = response.status_code == status.HTTP_200_OK
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -139,7 +139,7 @@ class CategoryTestCase(APITestCase):
         self.data = {'name': 'Updated_category_name', 'image': None, 'category_url': 'Updated_slug_name',
                      'color': '#FF00A5',
                      'description': 'No description'}
-        response = self.client.patch(reverse('categories-detail', args=[self.category.name]), self.data, format='json')
+        response = self.client.patch(reverse('categories-detail', args=[self.category.slug]), self.data, format='json')
         is_passed = response.status_code == status.HTTP_200_OK
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -150,7 +150,7 @@ class CategoryTestCase(APITestCase):
         })
 
     def test_delete_category(self):
-        response = self.client.delete(reverse('categories-detail', args=[self.category.name]), format='json')
+        response = self.client.delete(reverse('categories-detail', args=[self.category.slug]), format='json')
         is_passed = response.status_code == status.HTTP_204_NO_CONTENT
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
